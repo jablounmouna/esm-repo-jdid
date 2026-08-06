@@ -6,7 +6,7 @@ function Login() {
 
   const [loginInput, setLoginInput] = useState("");
   const [password, setPassword] = useState("");
-
+const [showPassword, setShowPassword] = useState(false); 
   const login = async () => {
 
     console.log("LOGIN START");
@@ -19,29 +19,35 @@ function Login() {
     }
 
     try {
+      const response = await fetch("http://localhost:8002/login.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login: loginInput,
+          password: password,
+        }),
+      });
 
-      const response = await fetch(
-        "http://localhost:8001/api/login.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            login: loginInput,
-            password: password
-          }),
-        }
-      );
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.log("LOGIN FETCH FAILED:", response.status, responseText);
+        alert(`Server error ${response.status}`);
+        return;
+      }
 
+      const contentType = response.headers.get("Content-Type") || "";
+      if (!contentType.includes("application/json")) {
+        const responseText = await response.text();
+        console.log("LOGIN INVALID RESPONSE:", responseText);
+        alert("Server did not return valid JSON.");
+        return;
+      }
 
-      const text = await response.text();
+      const data = await response.json();
 
-      console.log("RAW RESPONSE:", text);
-
-
-      const data = JSON.parse(text);
-
+      console.log("RESPONSE:", data);
 
       if (data.success) {
 
@@ -87,59 +93,38 @@ function Login() {
 
 
   return (
+    <div style={{minHeight:'72vh', display:'flex', alignItems:'center', justifyContent:'center'}}>
+      <div className="panel">
+        <h1 style={{textAlign:'center', marginBottom:18, fontSize:20, fontWeight:700}}>Login 🔐</h1>
 
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-
-      <div className="bg-white p-8 rounded-xl shadow-lg w-96">
-
-
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Login 🔐
-        </h1>
-
-
-        <div className="flex flex-col gap-4">
-
-
+        <div style={{display:'flex', flexDirection:'column', gap:12}}>
           <input
             type="text"
             placeholder="Email or phone"
             value={loginInput}
             onChange={(e) => setLoginInput(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg"
           />
 
+          <div style={{position:'relative'}}>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{paddingRight:40}}
+            />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg"
-          />
+            <span onClick={() => setShowPassword(!showPassword)} style={{position:'absolute', right:10, top:10, cursor:'pointer'}}>
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
 
+          <button onClick={login} className="btn btn-primary">Login</button>
 
-          <button
-  onClick={login}
-  className="bg-black text-white py-3 rounded-lg"
->
-  Login
-</button>
-
-
-<Link
-  to="/forgot-password"
-  className="text-center text-blue-600 mt-3"
->
-  Forgot password?
-</Link>
-
+          <Link to="/forgot-password" className="muted" style={{textAlign:'center', display:'block'}}>Forgot password?</Link>
         </div>
-
       </div>
-
     </div>
-
   );
 
 }

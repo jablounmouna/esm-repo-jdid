@@ -4,7 +4,7 @@ function ProductDetails({ products, addToCart }) {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const product = products.find((p) => p.id === Number(id));
+  const product = products.find((p) => String(p.id) === String(id));
 
   if (!product) {
     return (
@@ -56,7 +56,7 @@ function ProductDetails({ products, addToCart }) {
             <button
               onClick={() => {
                 addToCart(product);
-                navigate("/checkout");
+                navigate("/checkout", { state: { product } });
               }}
               className="flex-1 bg-amber-500 text-white py-3 rounded-lg hover:bg-amber-600 transition"
             >

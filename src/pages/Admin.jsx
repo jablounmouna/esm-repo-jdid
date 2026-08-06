@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Admin({ refreshProducts }) {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
+  const [notificationCount, setNotificationCount] = useState(() => Number(localStorage.getItem("admin_new_order_count") || 0));
+  const lastOrderCountRef = useRef(Number(localStorage.getItem("admin_last_order_count") || 0));
 
   const customProducts = JSON.parse(localStorage.getItem("products")) || [];
 
@@ -42,10 +46,70 @@ function Admin({ refreshProducts }) {
     refreshProducts();
   };
 
+  useEffect(() => {
+    let isActive = true;
+
+    const checkNewOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:8002/get_all_orders.php");
+        const data = await res.json();
+
+        if (!isActive || !data?.success) return;
+
+        const currentCount = Array.isArray(data.orders) ? data.orders.length : 0;
+
+        if (currentCount > lastOrderCountRef.current) {
+          const diff = currentCount - lastOrderCountRef.current;
+          setNotificationCount((prev) => {
+            const next = prev + diff;
+            localStorage.setItem("admin_new_order_count", String(next));
+            return next;
+          });
+        }
+
+        lastOrderCountRef.current = currentCount;
+        localStorage.setItem("admin_last_order_count", String(currentCount));
+      } catch (error) {
+        console.error("Admin notification check failed:", error);
+      }
+    };
+
+    checkNewOrders();
+    const interval = window.setInterval(checkNewOrders, 5000);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  const handleOpenOrders = () => {
+    setNotificationCount(0);
+    localStorage.setItem("admin_new_order_count", "0");
+    navigate("/orders");
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Panel 🔥</h1>
-      <h2 className="text-lg text-gray-500 mb-8">Products 📦</h2>
+      <div className="flex items-center justify-between gap-3 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Panel 🔥</h1>
+          <h2 className="text-lg text-gray-500">Products 📦</h2>
+        </div>
+
+        <button
+          onClick={handleOpenOrders}
+          className="relative flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+        >
+          <span className="text-lg">🔔</span>
+          Notifications
+          {notificationCount > 0 && (
+            <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+              {notificationCount}
+            </span>
+          )}
+        </button>
+      </div>
 
       {/* Add product form */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-10">

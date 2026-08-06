@@ -34,92 +34,62 @@ function Navbar({ cartCount = 0, wishlistCount = 0 }) {
   };
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-white shadow">
+    <nav className="navbar">
 
-      {/* Logo */}
-      <Link to="/" className="font-bold text-xl">
-        Handmade Shop 🛍️
+      {/* Logo / Brand */}
+      <Link to="/" className="brand">
+        <span style={{fontWeight:700, fontSize:20}}>Kelibia Net</span>
       </Link>
 
-      <div className="flex items-center gap-6">
+      <div className="nav-actions">
 
         {/* Language */}
-        <div className="flex gap-2">
-          <button onClick={() => i18n.changeLanguage("en")} className="text-sm">EN</button>
-          <button onClick={() => i18n.changeLanguage("fr")} className="text-sm">FR</button>
-          <button onClick={() => i18n.changeLanguage("ar")} className="text-sm">AR</button>
+        <div className="flex" style={{gap:8}}>
+          <button onClick={() => i18n.changeLanguage("en")} className="btn btn-sm btn-ghost">EN</button>
+          <button onClick={() => i18n.changeLanguage("fr")} className="btn btn-sm btn-ghost">FR</button>
+          <button onClick={() => i18n.changeLanguage("ar")} className="btn btn-sm btn-ghost">AR</button>
         </div>
 
         {/* Wishlist */}
-        <Link to="/wishlist" className="relative">
-          ❤️
+        <Link to="/wishlist" className="relative" aria-label="wishlist">
+          <div className="center" style={{width:36,height:36}} aria-hidden>❤️</div>
           {wishlistCount > 0 && (
-            <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 rounded-full">
-              {wishlistCount}
-            </span>
+            <span className="badge" style={{position:'absolute', top:-8, right:-8}}>{wishlistCount}</span>
           )}
         </Link>
 
         {/* Cart */}
-        <Link to="/cart" className="relative">
-          🛒
+        <Link to="/cart" className="relative" aria-label="cart">
+          <div className="center" style={{width:36,height:36}} aria-hidden>🛒</div>
           {cartCount > 0 && (
-            <span className="absolute -top-2 -right-3 bg-black text-white text-xs px-2 rounded-full">
-              {cartCount}
-            </span>
+            <span className="badge" style={{position:'absolute', top:-8, right:-8, background:'#111', color:'#fff'}}>{cartCount}</span>
           )}
         </Link>
 
         {/* Home */}
-        <Link to="/" className="text-gray-600 hover:text-black">
-          {t("home")}
-        </Link>
+        <Link to="/" className="muted">{t("home")}</Link>
 
-        {/* Auth حالة */}
+        {/* Auth */}
         {!user ? (
           <>
-            <Link to="/login" className="text-gray-600 hover:text-black">
-              {t("login")}
-            </Link>
+            <Link to="/login" className="muted">{t("login")}</Link>
 
-            <Link
-              to="/register"
-              className="px-4 py-2 bg-black text-white rounded-lg"
-            >
-              {t("register")}
-            </Link>
+            <Link to="/register" className="btn btn-primary">{t("register")}</Link>
           </>
         ) : (
           <>
-            {/* User name */}
-            <span className="text-sm text-gray-700">
-              👋 {user.name}
-            </span>
+            <span className="muted">👋 {user.name}</span>
 
-            <Link to="/profile" className="text-gray-600 hover:text-black">
-              {t("profile")}
-            </Link>
+            <Link to="/profile" className="muted">{t("profile")}</Link>
 
-            {/* Admin */}
             {user.role === "admin" && (
               <>
-                <Link to="/admin" className="text-gray-600 hover:text-black">
-                  Admin 🔥
-                </Link>
-
-                <Link to="/orders" className="text-gray-600 hover:text-black">
-                  Orders 📦
-                </Link>
+                <Link to="/admin" className="muted">Admin</Link>
+                <Link to="/orders" className="muted">Orders</Link>
               </>
             )}
 
-            {/* Logout */}
-            <button
-              onClick={logout}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-            >
-              {t("logout")}
-            </button>
+            <button onClick={logout} className="btn btn-ghost">{t("logout")}</button>
           </>
         )}
 

@@ -8,7 +8,7 @@ function Cart({ cart, removeFromCart, increaseQuantity, decreaseQuantity }) {
 
   const total = cart.reduce(
     (sum, item) =>
-      sum + Number(item.price) * Number(item.quantity || 1),
+      sum + Number(item.price) * Number(Number(item.quantity) || 1),
     0
   );
 
@@ -22,111 +22,40 @@ function Cart({ cart, removeFromCart, increaseQuantity, decreaseQuantity }) {
 
 
   return (
-    <div className="p-6">
+    <div className="site-container">
 
-      <h1 className="text-2xl font-bold mb-6">
-        🛒 Your Cart
-      </h1>
-
+      <h1 style={{fontSize:22, fontWeight:700, marginBottom:12}}>🛒 Your Cart</h1>
 
       {cart.length === 0 ? (
-
-        <h2 className="text-gray-500 text-center mt-10">
-          Cart is empty
-        </h2>
-
+        <h2 className="muted" style={{textAlign:'center', marginTop:24}}>Cart is empty</h2>
       ) : (
-
-        <div className="flex flex-col gap-4">
-
+        <div style={{display:'flex', flexDirection:'column', gap:12}}>
           {cart.map((item) => (
+            <div key={item.id} className="panel" style={{display:'flex', gap:12, alignItems:'center'}}>
+              <img src={item.image} alt={getProductName(item)} style={{width:96, height:96, objectFit:'cover', borderRadius:8}} />
 
-            <div
-              key={item.id}
-              className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center"
-            >
+              <div style={{flex:1}}>
+                <h2 style={{fontSize:16, fontWeight:700}}>{getProductName(item)}</h2>
+                <p className="muted">{item.price} TND</p>
 
-              <img
-                src={item.image}
-                alt={getProductName(item)}
-                className="w-24 h-24 object-cover rounded-lg"
-              />
+                <div style={{display:'flex', alignItems:'center', gap:8, marginTop:10}}>
+                  <button onClick={() => decreaseQuantity(item.id)} className="btn btn-ghost" style={{width:36,height:36,padding:0}}>−</button>
+                  <span style={{width:28, textAlign:'center', fontWeight:600}}>{item.quantity}</span>
+                  <button onClick={() => increaseQuantity(item.id)} className="btn btn-ghost" style={{width:36,height:36,padding:0}}>+</button>
 
-
-              <div className="flex-1">
-
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {getProductName(item)}
-                </h2>
-
-
-                <p className="text-gray-500">
-                  {item.price} TND
-                </p>
-
-
-                <div className="flex items-center gap-3 mt-2">
-
-                  <button
-                    onClick={() => decreaseQuantity(item.id)}
-                    className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200"
-                  >
-                    -
-                  </button>
-
-
-                  <span className="w-6 text-center font-medium">
-                    {item.quantity}
-                  </span>
-
-
-                  <button
-                    onClick={() => increaseQuantity(item.id)}
-                    className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200"
-                  >
-                    +
-                  </button>
-
-
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="ml-4 text-red-500 hover:text-red-700"
-                  >
-                    Delete 🗑️
-                  </button>
-
+                  <button onClick={() => removeFromCart(item.id)} style={{marginLeft:12, color:'#c43', background:'transparent', border:0}}>Delete 🗑️</button>
                 </div>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       )}
 
-
-
       {cart.length > 0 && (
-
-        <div className="mt-8 flex items-center justify-between border-t pt-6">
-
-          <h2 className="text-xl font-bold text-gray-800">
-            Total: {total.toFixed(2)} TND
-          </h2>
-
-
-          <button
-            onClick={() => navigate("/checkout")}
-            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800"
-          >
-            Checkout 💳
-          </button>
-
+        <div style={{marginTop:20, display:'flex', alignItems:'center', justifyContent:'space-between', borderTop:'1px solid var(--color-line)', paddingTop:18}}>
+          <h2 style={{fontSize:18, fontWeight:700}}>Total: {total.toFixed(2)} TND</h2>
+          <button onClick={() => navigate("/checkout")} className="btn btn-primary">Checkout 💳</button>
         </div>
-
       )}
 
     </div>

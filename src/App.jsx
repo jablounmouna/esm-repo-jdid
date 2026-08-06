@@ -19,7 +19,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import staticProducts from "./data/products";
 
 function App() {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cart")) || [];
+    } catch {
+      return [];
+    }
+  });
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
 
@@ -43,6 +49,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  // 💾 save cart
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   // ❤️ toggle (SAFE version)
   const toggleWishlist = (product) => {
@@ -101,7 +112,7 @@ function App() {
   return (
     <>
       <Navbar
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+        cartCount={cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0)}
         wishlistCount={wishlist.length} // ❤️ مهم
       />
 

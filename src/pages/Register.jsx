@@ -2,32 +2,44 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
+
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
   const register = async () => {
+
     if (!name || !email || !password) {
       alert("Fill all fields ❌");
       return;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8001/api/register.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
+
+      const response = await fetch(
+        "http://localhost:8001/api/register.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+          }),
+        }
+      );
+
 
       const data = await response.json();
+
 
       if (data.success) {
         alert("Account created ✅");
@@ -36,55 +48,44 @@ function Register() {
         alert(data.message);
       }
 
+
     } catch (error) {
+
       console.log(error);
-      alert("Server connection error ❌");
+      alert("Server error ❌");
+
     }
+
   };
 
+
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-md w-96">
+    <div style={{minHeight:'72vh', display:'flex', alignItems:'center', justifyContent:'center'}}>
+      <div className="panel">
+        <h1 style={{textAlign:'center', marginBottom:18, fontSize:20, fontWeight:700}}>Register 📝</h1>
 
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Register 📝
-        </h1>
+        <div style={{display:'flex', flexDirection:'column', gap:12}}>
+          <input placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} />
 
-        <div className="flex flex-col gap-4">
+          <input placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
 
-          <input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
-          />
+          <input placeholder="Delivery address" value={address} onChange={(e) => setAddress(e.target.value)} />
 
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
-          />
+          <label style={{marginTop:8}}>Phone number <span style={{ color: "red" }}>*</span></label>
+          <input type="text" placeholder="Enter your phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
-          <input
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
-          />
+          <div style={{position:'relative'}}>
+            <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} style={{paddingRight:40}} />
+            <span onClick={()=>setShowPassword(!showPassword)} style={{position:'absolute', right:10, top:10, cursor:'pointer'}}>{showPassword ? "🙈" : "👁️"}</span>
+          </div>
 
-          <button
-            onClick={register}
-            className="bg-black text-white py-3 rounded-lg"
-          >
-            Register
-          </button>
-
+          <button onClick={register} className="btn btn-primary">Register</button>
         </div>
       </div>
     </div>
   );
+
 }
+
 
 export default Register;
