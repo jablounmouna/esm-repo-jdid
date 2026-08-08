@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { apiFetch } from "../api";
+
 function Login() {
 
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const [showPassword, setShowPassword] = useState(false);
     }
 
     try {
-      const response = await fetch("http://localhost:8002/login.php", {
+      const data = await apiFetch("/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,25 +31,6 @@ const [showPassword, setShowPassword] = useState(false);
           password: password,
         }),
       });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        console.log("LOGIN FETCH FAILED:", response.status, responseText);
-        alert(`Server error ${response.status}`);
-        return;
-      }
-
-      const contentType = response.headers.get("Content-Type") || "";
-      if (!contentType.includes("application/json")) {
-        const responseText = await response.text();
-        console.log("LOGIN INVALID RESPONSE:", responseText);
-        alert("Server did not return valid JSON.");
-        return;
-      }
-
-      const data = await response.json();
-
-      console.log("RESPONSE:", data);
 
       if (data.success) {
 

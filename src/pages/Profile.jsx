@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { apiFetch } from "../api";
 
 function Profile() {
   const navigate = useNavigate();
@@ -15,8 +16,7 @@ function Profile() {
       return;
     }
 
-    fetch(`http://localhost:8002/get_orders.php?email=${encodeURIComponent(user.email)}`)
-      .then((res) => res.json())
+    apiFetch(`/get_orders.php?email=${encodeURIComponent(user.email)}`)
       .then((data) => {
         if (data && data.success) {
           setOrders(data.orders || []);

@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { apiFetch } from "../api";
 
 function Checkout({ cart, setCart }) {
 
@@ -82,8 +83,7 @@ function Checkout({ cart, setCart }) {
     try {
       console.log("CART SENT:", JSON.stringify(checkoutItems, null, 2));
 
-      const apiUrl = "http://localhost:8002/create_order.php";
-      const res = await fetch(apiUrl, {
+      const data = await apiFetch("/create_order.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,13 +96,9 @@ function Checkout({ cart, setCart }) {
           products: checkoutItems,
         }),
       });
-      const text = await res.text();
 
-      console.log("SERVER RESPONSE:", text);
+      console.log("ORDER:", data);
 
-      const data = JSON.parse(text);
-
-console.log("ORDER:", data);
 
 
 

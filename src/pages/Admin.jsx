@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../api";
 
 function Admin({ refreshProducts }) {
   const navigate = useNavigate();
@@ -51,8 +52,7 @@ function Admin({ refreshProducts }) {
 
     const checkNewOrders = async () => {
       try {
-        const res = await fetch("http://localhost:8002/get_all_orders.php");
-        const data = await res.json();
+        const data = await apiFetch("/get_all_orders.php");
 
         if (!isActive || !data?.success) return;
 

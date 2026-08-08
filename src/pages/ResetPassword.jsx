@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { apiFetch } from "../api";
+
 function ResetPassword(){
 
   const [login,setLogin] = useState("");
@@ -9,25 +11,17 @@ function ResetPassword(){
 
 
   const resetPassword = async()=>{
-
-
-    const response = await fetch(
-      "http://localhost:8001/api/reset_password.php",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          login,
-          code,
-          password
-        })
-      }
-    );
-
-
-    const data = await response.json();
+    const data = await apiFetch("/reset_password.php", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        login,
+        code,
+        password
+      })
+    });
 
 
     alert(data.message);

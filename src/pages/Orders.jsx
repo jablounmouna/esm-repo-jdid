@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { apiFetch } from "../api";
 
 function Orders() {
 
@@ -8,8 +9,7 @@ function Orders() {
   // ✅ Get all orders
   useEffect(() => {
 
-    fetch("http://localhost:8002/get_all_orders.php")
-      .then((res) => res.json())
+    apiFetch("/get_all_orders.php")
       .then((data) => {
 
         console.log("ORDERS:", data);
@@ -35,21 +35,16 @@ function Orders() {
 
     try {
 
-      const response = await fetch(
-        "http://localhost:8002/get_all_orders.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            id: order.id,
-            status: status
-          })
-        }
-      );
-
-      const data = await response.json();
+      const data = await apiFetch("/get_all_orders.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: order.id,
+          status: status
+        })
+      });
 
       if (data.success) {
 
@@ -175,7 +170,7 @@ function Orders() {
                           product.image
                             ? product.image.startsWith("http")
                               ? product.image
-                              : `http://localhost:8002/${product.image}`
+                              : `/${product.image}`
                             : "https://placehold.co/80x80"
                         }
                         alt={product.name}
