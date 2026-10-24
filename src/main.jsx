@@ -1,12 +1,23 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import './index.css'
-import './style.css'
+import App from "./App.jsx";
+
+// Initialize i18n before React mounts
 import "./i18n";
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+
+// Global styles (design system)
+import "./style.css";
+
+// Provide auth context to the whole app
+import { AuthProvider } from "./context/AuthContext";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <AuthProvider>
+      <BrowserRouter basename="/esm-repo-jdid">
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
+  </StrictMode>
 );

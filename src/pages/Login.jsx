@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
 
@@ -9,7 +10,9 @@ function Login() {
   const [loginInput, setLoginInput] = useState("");
   const [password, setPassword] = useState("");
 const [showPassword, setShowPassword] = useState(false); 
-  const login = async () => {
+  const { login: authLogin } = useAuth();
+
+  const handleLogin = async () => {
 
     console.log("LOGIN START");
     console.log("LOGIN:", loginInput);
@@ -32,14 +35,13 @@ const [showPassword, setShowPassword] = useState(false);
         }),
       });
 
+
       if (data.success) {
 
         console.log("LOGIN SUCCESS");
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify(data.user)
-        );
+        // update global auth state
+        authLogin(data.user);
 
         console.log(
           "STORED:",
@@ -49,7 +51,12 @@ const [showPassword, setShowPassword] = useState(false);
 
         alert("Login success ✅");
 
-        navigate("/");
+        // Redirect based on role
+        if (data.user && data.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
 
 
       } else {
@@ -102,7 +109,7 @@ const [showPassword, setShowPassword] = useState(false);
             </span>
           </div>
 
-          <button onClick={login} className="btn btn-primary">Login</button>
+          <button onClick={handleLogin} className="btn btn-primary">Login</button>
 
           <Link to="/forgot-password" className="muted" style={{textAlign:'center', display:'block'}}>Forgot password?</Link>
         </div>
